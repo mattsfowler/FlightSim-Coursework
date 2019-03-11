@@ -16,6 +16,7 @@ namespace RemoteFlightController
     public partial class frmRemoteFlightController : Form
     {
         public RemoteFlightController Simulator;
+        public Thread workerThread;
 
         public frmRemoteFlightController()
         {
@@ -30,13 +31,20 @@ namespace RemoteFlightController
 
         private void btnConnectDisconnect_Click(object sender, EventArgs e)
         {
-            txtServerIP.Enabled = false;
-            txtServerPort.Enabled = false;
-            btnConnectDisconnect.Text = "Disconnect";
+            if (btnConnectDisconnect.Text == "Connect")
+            {
+                txtServerIP.Enabled = false;
+                txtServerPort.Enabled = false;
+                btnConnectDisconnect.Text = "Disconnect";
 
-            Thread workerThread = new Thread(new ThreadStart(ConnectToSimulator));
+                workerThread = new Thread(new ThreadStart(ConnectToSimulator));
 
-            workerThread.Start();
+                workerThread.Start();
+            }
+            else if (btnConnectDisconnect.Text == "Disconnect")
+            {
+                workerThread.Abort();
+            }
         }
 
         public void ConnectToSimulator()
@@ -81,6 +89,10 @@ namespace RemoteFlightController
         public event UpdateSentHandler ControlUpdateSent;
         public event UpdateRecievedHandler TelemetryRecieved;
         public event ErrorRecievedHandler ErrorRecieved;
+
+        public Thread workerThread;
+        public TcpClient client;
+        public NetworkStream stream;
 
         public RemoteFlightController()
         {
