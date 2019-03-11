@@ -47,6 +47,7 @@
             this.VerticleSpeed = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Throttle = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ElevatorPitch = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ErrorCode = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.lblErrorDisplay = new System.Windows.Forms.Label();
             this.grpConnection.SuspendLayout();
             this.grpPlaneControls.SuspendLayout();
@@ -181,6 +182,10 @@
             // 
             // dgvInputData
             // 
+            this.dgvInputData.AllowUserToAddRows = false;
+            this.dgvInputData.AllowUserToDeleteRows = false;
+            this.dgvInputData.AllowUserToResizeColumns = false;
+            this.dgvInputData.AllowUserToResizeRows = false;
             this.dgvInputData.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvInputData.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Altitude,
@@ -188,11 +193,12 @@
             this.Pitch,
             this.VerticleSpeed,
             this.Throttle,
-            this.ElevatorPitch});
+            this.ElevatorPitch,
+            this.ErrorCode});
             this.dgvInputData.Enabled = false;
             this.dgvInputData.Location = new System.Drawing.Point(229, 130);
             this.dgvInputData.Name = "dgvInputData";
-            this.dgvInputData.Size = new System.Drawing.Size(643, 330);
+            this.dgvInputData.Size = new System.Drawing.Size(746, 330);
             this.dgvInputData.TabIndex = 6;
             // 
             // Altitude
@@ -230,6 +236,11 @@
             this.ElevatorPitch.HeaderText = "ElevatorPitch";
             this.ElevatorPitch.Name = "ElevatorPitch";
             // 
+            // ErrorCode
+            // 
+            this.ErrorCode.HeaderText = "Error Codes";
+            this.ErrorCode.Name = "ErrorCode";
+            // 
             // lblErrorDisplay
             // 
             this.lblErrorDisplay.AutoSize = true;
@@ -244,7 +255,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(884, 561);
+            this.ClientSize = new System.Drawing.Size(993, 561);
             this.Controls.Add(this.lblErrorDisplay);
             this.Controls.Add(this.dgvInputData);
             this.Controls.Add(this.grpPlaneControls);
@@ -280,13 +291,14 @@
         private System.Windows.Forms.Label lblPitch;
         private System.Windows.Forms.TrackBar trbPitch;
         private System.Windows.Forms.DataGridView dgvInputData;
+        private System.Windows.Forms.Label lblErrorDisplay;
         private System.Windows.Forms.DataGridViewTextBoxColumn Altitude;
         private System.Windows.Forms.DataGridViewTextBoxColumn Speed;
         private System.Windows.Forms.DataGridViewTextBoxColumn Pitch;
         private System.Windows.Forms.DataGridViewTextBoxColumn VerticleSpeed;
         private System.Windows.Forms.DataGridViewTextBoxColumn Throttle;
         private System.Windows.Forms.DataGridViewTextBoxColumn ElevatorPitch;
-        private System.Windows.Forms.Label lblErrorDisplay;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ErrorCode;
     }
 }
 

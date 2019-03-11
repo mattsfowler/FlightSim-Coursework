@@ -15,51 +15,6 @@ using System.Web.Script.Serialization;
 
 namespace RemoteFlightController
 {
-    public partial class frmRemoteFlightController : Form
-    {
-        public RemoteFlightController Simulator;
-
-        public frmRemoteFlightController()
-        {
-            InitializeComponent();
-            Simulator = new RemoteFlightController(this);
-        }
-
-        public void UpdateTable(TelemetryUpdate data)
-        {
-            dgvInputData.Rows.Add(new object[] { data.Altitude,
-                                                 data.Speed,
-                                                 data.Pitch,
-                                                 data.VerticleSpeed,
-                                                 data.Throttle,
-                                                 data.ElevatorPitch});
-        }
-
-        private void RemoteFlightController_Load(object sender, EventArgs e)
-        {
-            
-        }
-
-        private void btnConnectDisconnect_Click(object sender, EventArgs e)
-        {
-            if (btnConnectDisconnect.Text == "Connect")
-            {
-                txtServerIP.Enabled = false;
-                txtServerPort.Enabled = false;
-                btnConnectDisconnect.Text = "Disconnect";
-                Simulator.Connect(txtServerIP.Text, txtServerPort.Text);
-            }
-            else if (btnConnectDisconnect.Text == "Disconnect")
-            {
-                txtServerIP.Enabled = true;
-                txtServerPort.Enabled = true;
-                btnConnectDisconnect.Text = "Connect";
-                Simulator.Disconnect();
-            }
-        }
-    }
-
-
     public struct ControlsUpdate
     {
         public double Throttle;
@@ -82,6 +37,66 @@ namespace RemoteFlightController
     public delegate void UpdateRecievedHandler(TelemetryUpdate telemetryUpdate);
     public delegate void ErrorRecievedHandler(string errormessage);
 
+    public delegate ControlsUpdate GetControlsHandler();
+
+
+    public partial class frmRemoteFlightController : Form
+    {
+        public RemoteFlightController Simulator;
+
+        public frmRemoteFlightController()
+        {
+            InitializeComponent();
+            Simulator = new RemoteFlightController(this);
+        }
+
+        public void UpdateTable(TelemetryUpdate data)
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new UpdateRecievedHandler(UpdateTable), data);
+            }
+            else
+            {
+                dgvInputData.Rows.Insert(0, new object[] { data.Altitude,
+                                                 data.Speed,
+                                                 data.Pitch,
+                                                 data.VerticleSpeed,
+                                                 data.Throttle,
+                                                 data.ElevatorPitch});
+            }
+        }
+
+        private void RemoteFlightController_Load(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void btnConnectDisconnect_Click(object sender, EventArgs e)
+        {
+            if (btnConnectDisconnect.Text == "Connect")
+            {
+                txtServerIP.Enabled = false;
+                txtServerPort.Enabled = false;
+                trbPitch.Enabled = true;
+                trbThrottleControl.Enabled = true;
+                btnConnectDisconnect.Text = "Disconnect";
+                Simulator.Connect(txtServerIP.Text, txtServerPort.Text);
+            }
+            else if (btnConnectDisconnect.Text == "Disconnect")
+            {
+                txtServerIP.Enabled = true;
+                txtServerPort.Enabled = true;
+                trbPitch.Enabled = false;
+                trbPitch.Value = 0;
+                trbThrottleControl.Enabled = false;
+                trbThrottleControl.Value = 0;
+                btnConnectDisconnect.Text = "Connect";
+                Simulator.Disconnect();
+            }
+        }
+    }
+
 
     public class RemoteFlightController
     {
@@ -90,9 +105,10 @@ namespace RemoteFlightController
         public event ErrorRecievedHandler ErrorRecieved;
 
         public frmRemoteFlightController CurrentForm;
-        public Thread workerThread;
+        public Thread listenerThread;
         public TcpClient client;
         public NetworkStream stream;
+        public ControlsUpdate currentControls;
 
         public RemoteFlightController(frmRemoteFlightController CurrentForm)
         {
@@ -104,15 +120,15 @@ namespace RemoteFlightController
         }
 
         public void Connect(string ipAddress, string port)
-        { 
-            workerThread = new Thread(new ParameterizedThreadStart(ConnectionLoop));
-            workerThread.Start(new string[] { ipAddress, port });
+        {
+            listenerThread = new Thread(new ParameterizedThreadStart(ConnectionLoop));
+            listenerThread.Start(new string[] { ipAddress, port });
         }
 
         public void Disconnect()
         {
-            workerThread.Abort();
-            //client.Close(); <--- when the thread is aborted, it closes automatically
+            listenerThread.Abort();
+            //client.Close(); <--- when the thread is aborted, it closes automatically (I think, check this properly)
         }
 
         private void ConnectionLoop(object address)
@@ -120,9 +136,9 @@ namespace RemoteFlightController
             string ip = ((string[])address)[0];
             string port = ((string[])address)[1];
 
-            TcpClient client = new TcpClient();
+            client = new TcpClient();
             client.Connect(ip, int.Parse(port));
-            NetworkStream stream = client.GetStream();
+            stream = client.GetStream();
 
             int bufferSize = 256;
             byte[] buffer = new byte[bufferSize];
@@ -140,7 +156,11 @@ namespace RemoteFlightController
 
         private void onUpdateSent(ControlsUpdate controlsUpdate)
         {
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            string stringData = serializer.Serialize(controlsUpdate);
+            byte[] rawData = Encoding.ASCII.GetBytes(stringData);
 
+            stream.Write(rawData, 0, rawData.Length);
         }
 
         private void onTelemetryRecieved(TelemetryUpdate telemetryUpdate)
