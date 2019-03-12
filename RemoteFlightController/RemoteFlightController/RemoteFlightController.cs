@@ -35,7 +35,7 @@ namespace RemoteFlightController
 
     public delegate void UpdateSentHandler(ControlsUpdate controlsUpdate);
     public delegate void UpdateRecievedHandler(TelemetryUpdate telemetryUpdate);
-    public delegate void ErrorRecievedHandler(int errorcode);
+    public delegate void ErrorRecievedHandler(string message);
 
     public delegate ControlsUpdate GetControlsHandler();
 
@@ -73,33 +73,24 @@ namespace RemoteFlightController
             }
         }
 
-        public void ShowError(int errorcode)
+        public void ShowError(string message)
         {
             if (this.InvokeRequired)
             {
-                Invoke(new ErrorRecievedHandler(ShowError), errorcode);
+                Invoke(new ErrorRecievedHandler(ShowError), message);
             }
             else
             {
-                lblErrorDisplay.ForeColor = Color.Red;
-
-                if (errorcode == 0)
+                if (message == "(no errors)")
                 {
                     lblErrorDisplay.ForeColor = Color.Black;
-                    lblErrorDisplay.Text = "(no errors)";
-                }
-                else if (errorcode == 1)
-                {
-                    lblErrorDisplay.Text = "WARNING: Low altitude!";
-                }
-                else if (errorcode == 2)
-                {
-                    lblErrorDisplay.Text = "WARNING: Stall risk!";
                 }
                 else
                 {
-                    lblErrorDisplay.Text = "WARNING: Unknown warning!";
+                    lblErrorDisplay.ForeColor = Color.Red;
                 }
+
+                lblErrorDisplay.Text = message;
             }
         }
 
@@ -228,15 +219,30 @@ namespace RemoteFlightController
 
             if (currentTelem.WarningCode != telemetryUpdate.WarningCode)
             {
-                ErrorRecieved.Invoke(telemetryUpdate.WarningCode);
+                string message = "Unknown warning!";
+
+                if (telemetryUpdate.WarningCode == 0)
+                {
+                    message = "(no errors)";
+                }
+                else if (telemetryUpdate.WarningCode == 1)
+                {
+                    message = "WARNING: Low altitude!";
+                }
+                else if (telemetryUpdate.WarningCode == 2)
+                {
+                    message = "WARNING: Stall risk!";
+                }
+
+                ErrorRecieved.Invoke(message);
             }
 
             currentTelem = telemetryUpdate;
         }
 
-        private void onErrorRecieved(int errorcode)
+        private void onErrorRecieved(string message)
         {
-            CurrentForm.ShowError(errorcode);
+            CurrentForm.ShowError(message);
         }
     }
 }
