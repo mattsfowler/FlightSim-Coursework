@@ -38,3 +38,13 @@ C:\Users\17025958.UNI.015\Documents\GitHub\FlightSim-Coursework\RemoteFlightCont
 C:\Users\17025958.UNI.015\Documents\GitHub\FlightSim-Coursework\RemoteFlightController\RemoteFlightController\obj\Debug\RemoteFlightController.csproj.CoreCompileInputs.cache
 C:\Users\17025958.UNI.015\Documents\GitHub\FlightSim-Coursework\RemoteFlightController\RemoteFlightController\obj\Debug\RemoteFlightController.exe
 C:\Users\17025958.UNI.015\Documents\GitHub\FlightSim-Coursework\RemoteFlightController\RemoteFlightController\obj\Debug\RemoteFlightController.pdb
+C:\Users\17025958.UNI.004\Documents\GitHub\FlightSim-Coursework\RemoteFlightController\RemoteFlightController\bin\Debug\RemoteFlightController.exe.config
+C:\Users\17025958.UNI.004\Documents\GitHub\FlightSim-Coursework\RemoteFlightController\RemoteFlightController\bin\Debug\RemoteFlightController.exe
+C:\Users\17025958.UNI.004\Documents\GitHub\FlightSim-Coursework\RemoteFlightController\RemoteFlightController\bin\Debug\RemoteFlightController.pdb
+C:\Users\17025958.UNI.004\Documents\GitHub\FlightSim-Coursework\RemoteFlightController\RemoteFlightController\obj\Debug\RemoteFlightController.csprojAssemblyReference.cache
+C:\Users\17025958.UNI.004\Documents\GitHub\FlightSim-Coursework\RemoteFlightController\RemoteFlightController\obj\Debug\RemoteFlightController.Properties.Resources.resources
+C:\Users\17025958.UNI.004\Documents\GitHub\FlightSim-Coursework\RemoteFlightController\RemoteFlightController\obj\Debug\RemoteFlightController.frmRemoteFlightController.resources
+C:\Users\17025958.UNI.004\Documents\GitHub\FlightSim-Coursework\RemoteFlightController\RemoteFlightController\obj\Debug\RemoteFlightController.csproj.GenerateResource.cache
+C:\Users\17025958.UNI.004\Documents\GitHub\FlightSim-Coursework\RemoteFlightController\RemoteFlightController\obj\Debug\RemoteFlightController.csproj.CoreCompileInputs.cache
+C:\Users\17025958.UNI.004\Documents\GitHub\FlightSim-Coursework\RemoteFlightController\RemoteFlightController\obj\Debug\RemoteFlightController.exe
+C:\Users\17025958.UNI.004\Documents\GitHub\FlightSim-Coursework\RemoteFlightController\RemoteFlightController\obj\Debug\RemoteFlightController.pdb

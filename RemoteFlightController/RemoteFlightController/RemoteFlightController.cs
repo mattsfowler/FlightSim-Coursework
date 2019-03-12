@@ -48,6 +48,11 @@ namespace RemoteFlightController
         {
             InitializeComponent();
             Simulator = new RemoteFlightController(this);
+            txtServerPort.Text = "9999";
+
+            IPHostEntry ipHostEntry = Dns.GetHostEntry(Dns.GetHostName());
+            IPAddress[] address = ipHostEntry.AddressList;
+            txtServerIP.Text = address[4].ToString();
         }
 
         public void UpdateTable(TelemetryUpdate data)
@@ -63,7 +68,8 @@ namespace RemoteFlightController
                                                  data.Pitch,
                                                  data.VerticleSpeed,
                                                  data.Throttle,
-                                                 data.ElevatorPitch});
+                                                 data.ElevatorPitch,
+                                                 data.WarningCode});
             }
         }
 
@@ -77,7 +83,12 @@ namespace RemoteFlightController
             {
                 lblErrorDisplay.ForeColor = Color.Red;
 
-                if (errorcode == 1)
+                if (errorcode == 0)
+                {
+                    lblErrorDisplay.ForeColor = Color.Black;
+                    lblErrorDisplay.Text = "(no errors)";
+                }
+                else if (errorcode == 1)
                 {
                     lblErrorDisplay.Text = "WARNING: Low altitude!";
                 }
@@ -85,12 +96,11 @@ namespace RemoteFlightController
                 {
                     lblErrorDisplay.Text = "WARNING: Stall risk!";
                 }
+                else
+                {
+                    lblErrorDisplay.Text = "WARNING: Unknown warning!";
+                }
             }
-        }
-
-        private void RemoteFlightController_Load(object sender, EventArgs e)
-        {
-            
         }
 
         private void btnConnectDisconnect_Click(object sender, EventArgs e)
@@ -139,11 +149,12 @@ namespace RemoteFlightController
         public Thread listenerThread;
         public TcpClient client;
         public NetworkStream stream;
-        public ControlsUpdate currentControls;
+        public TelemetryUpdate currentTelem;
 
         public RemoteFlightController(frmRemoteFlightController CurrentForm)
         {
             this.CurrentForm = CurrentForm;
+            currentTelem = new TelemetryUpdate();
 
             ControlUpdateSent += new UpdateSentHandler(onUpdateSent);
             TelemetryRecieved += new UpdateRecievedHandler(onTelemetryRecieved);
@@ -190,11 +201,6 @@ namespace RemoteFlightController
 
                 TelemetryUpdate update = serializer.Deserialize<TelemetryUpdate>(message);
                 TelemetryRecieved.Invoke(update);
-
-                if (update.WarningCode != 0)
-                {
-                    ErrorRecieved.Invoke(update.WarningCode);
-                }
             }
         }
 
@@ -209,15 +215,28 @@ namespace RemoteFlightController
 
         private void onTelemetryRecieved(TelemetryUpdate telemetryUpdate)
         {
-            CurrentForm.UpdateTable(telemetryUpdate);
+            if ((currentTelem.Altitude != telemetryUpdate.Altitude)
+             || (currentTelem.ElevatorPitch != telemetryUpdate.ElevatorPitch)
+             || (currentTelem.Pitch != telemetryUpdate.Pitch)
+             || (currentTelem.Speed != telemetryUpdate.Speed)
+             || (currentTelem.Throttle != telemetryUpdate.Throttle)
+             || (currentTelem.VerticleSpeed != telemetryUpdate.VerticleSpeed)
+             || (currentTelem.WarningCode != telemetryUpdate.WarningCode))
+            {
+                CurrentForm.UpdateTable(telemetryUpdate);
+            }
+
+            if (currentTelem.WarningCode != telemetryUpdate.WarningCode)
+            {
+                ErrorRecieved.Invoke(telemetryUpdate.WarningCode);
+            }
+
+            currentTelem = telemetryUpdate;
         }
 
         private void onErrorRecieved(int errorcode)
         {
-            if (errorcode == 1)
-            {
-
-            }
+            CurrentForm.ShowError(errorcode);
         }
     }
 }

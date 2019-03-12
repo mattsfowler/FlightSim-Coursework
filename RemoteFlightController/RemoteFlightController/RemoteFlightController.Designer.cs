@@ -243,16 +243,16 @@
             // 
             // ErrorCode
             // 
-            this.ErrorCode.HeaderText = "Error Codes";
+            this.ErrorCode.HeaderText = "Warnings";
             this.ErrorCode.Name = "ErrorCode";
             // 
             // lblErrorDisplay
             // 
             this.lblErrorDisplay.AutoSize = true;
-            this.lblErrorDisplay.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblErrorDisplay.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblErrorDisplay.Location = new System.Drawing.Point(18, 324);
             this.lblErrorDisplay.Name = "lblErrorDisplay";
-            this.lblErrorDisplay.Size = new System.Drawing.Size(76, 17);
+            this.lblErrorDisplay.Size = new System.Drawing.Size(94, 22);
             this.lblErrorDisplay.TabIndex = 7;
             this.lblErrorDisplay.Text = "(no errors)";
             // 
@@ -268,7 +268,6 @@
             this.Controls.Add(this.grpConnection);
             this.Name = "frmRemoteFlightController";
             this.Text = "Remote Flight Controller";
-            this.Load += new System.EventHandler(this.RemoteFlightController_Load);
             this.grpConnection.ResumeLayout(false);
             this.grpConnection.PerformLayout();
             this.grpPlaneControls.ResumeLayout(false);
