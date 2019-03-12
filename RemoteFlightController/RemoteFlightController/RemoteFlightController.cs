@@ -35,7 +35,7 @@ namespace RemoteFlightController
 
     public delegate void UpdateSentHandler(ControlsUpdate controlsUpdate);
     public delegate void UpdateRecievedHandler(TelemetryUpdate telemetryUpdate);
-    public delegate void ErrorRecievedHandler(string errormessage);
+    public delegate void ErrorRecievedHandler(int errorcode);
 
     public delegate ControlsUpdate GetControlsHandler();
 
@@ -67,6 +67,27 @@ namespace RemoteFlightController
             }
         }
 
+        public void ShowError(int errorcode)
+        {
+            if (this.InvokeRequired)
+            {
+                Invoke(new ErrorRecievedHandler(ShowError), errorcode);
+            }
+            else
+            {
+                lblErrorDisplay.ForeColor = Color.Red;
+
+                if (errorcode == 1)
+                {
+                    lblErrorDisplay.Text = "WARNING: Low altitude!";
+                }
+                else if (errorcode == 2)
+                {
+                    lblErrorDisplay.Text = "WARNING: Stall risk!";
+                }
+            }
+        }
+
         private void RemoteFlightController_Load(object sender, EventArgs e)
         {
             
@@ -94,6 +115,16 @@ namespace RemoteFlightController
                 btnConnectDisconnect.Text = "Connect";
                 Simulator.Disconnect();
             }
+        }
+
+        private void trbThrottleControl_Scroll(object sender, EventArgs e)
+        {
+            Simulator.ControlDataChanged((trbThrottleControl.Value / 10f), (trbPitch.Value / 10f));
+        }
+
+        private void trbPitch_Scroll(object sender, EventArgs e)
+        {
+            Simulator.ControlDataChanged((trbThrottleControl.Value / 10f), (trbPitch.Value / 10f));
         }
     }
 
@@ -131,6 +162,14 @@ namespace RemoteFlightController
             //client.Close(); <--- when the thread is aborted, it closes automatically (I think, check this properly)
         }
 
+        public void ControlDataChanged(double throttle, double elevatorPitch)
+        {
+            ControlsUpdate update = new ControlsUpdate();
+            update.Throttle = throttle;
+            update.ElevatorPitch = elevatorPitch;
+            ControlUpdateSent.Invoke(update);
+        }
+
         private void ConnectionLoop(object address)
         {
             string ip = ((string[])address)[0];
@@ -151,6 +190,11 @@ namespace RemoteFlightController
 
                 TelemetryUpdate update = serializer.Deserialize<TelemetryUpdate>(message);
                 TelemetryRecieved.Invoke(update);
+
+                if (update.WarningCode != 0)
+                {
+                    ErrorRecieved.Invoke(update.WarningCode);
+                }
             }
         }
 
@@ -168,9 +212,12 @@ namespace RemoteFlightController
             CurrentForm.UpdateTable(telemetryUpdate);
         }
 
-        private void onErrorRecieved(string errormessage)
+        private void onErrorRecieved(int errorcode)
         {
+            if (errorcode == 1)
+            {
 
+            }
         }
     }
 }

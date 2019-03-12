@@ -166,19 +166,24 @@
             // 
             this.trbPitch.Enabled = false;
             this.trbPitch.Location = new System.Drawing.Point(115, 44);
+            this.trbPitch.Maximum = 50;
+            this.trbPitch.Minimum = -50;
             this.trbPitch.Name = "trbPitch";
             this.trbPitch.Orientation = System.Windows.Forms.Orientation.Vertical;
             this.trbPitch.Size = new System.Drawing.Size(45, 104);
             this.trbPitch.TabIndex = 6;
+            this.trbPitch.Scroll += new System.EventHandler(this.trbPitch_Scroll);
             // 
             // trbThrottleControl
             // 
             this.trbThrottleControl.Enabled = false;
             this.trbThrottleControl.Location = new System.Drawing.Point(21, 44);
+            this.trbThrottleControl.Maximum = 1000;
             this.trbThrottleControl.Name = "trbThrottleControl";
             this.trbThrottleControl.Orientation = System.Windows.Forms.Orientation.Vertical;
             this.trbThrottleControl.Size = new System.Drawing.Size(45, 104);
             this.trbThrottleControl.TabIndex = 0;
+            this.trbThrottleControl.Scroll += new System.EventHandler(this.trbThrottleControl_Scroll);
             // 
             // dgvInputData
             // 
