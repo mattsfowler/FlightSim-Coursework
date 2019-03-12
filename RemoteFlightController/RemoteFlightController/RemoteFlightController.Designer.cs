@@ -49,11 +49,17 @@
             this.ElevatorPitch = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ErrorCode = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.lblErrorDisplay = new System.Windows.Forms.Label();
+            this.dgvSentData = new System.Windows.Forms.DataGridView();
+            this.SentPitch = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.SentThrottle = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.lblSentData = new System.Windows.Forms.Label();
+            this.lblDataRecieved = new System.Windows.Forms.Label();
             this.grpConnection.SuspendLayout();
             this.grpPlaneControls.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trbPitch)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trbThrottleControl)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvInputData)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvSentData)).BeginInit();
             this.SuspendLayout();
             // 
             // txtServerIP
@@ -201,7 +207,7 @@
             this.ElevatorPitch,
             this.ErrorCode});
             this.dgvInputData.Enabled = false;
-            this.dgvInputData.Location = new System.Drawing.Point(229, 130);
+            this.dgvInputData.Location = new System.Drawing.Point(275, 151);
             this.dgvInputData.Name = "dgvInputData";
             this.dgvInputData.Size = new System.Drawing.Size(746, 330);
             this.dgvInputData.TabIndex = 6;
@@ -250,17 +256,59 @@
             // 
             this.lblErrorDisplay.AutoSize = true;
             this.lblErrorDisplay.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblErrorDisplay.Location = new System.Drawing.Point(18, 324);
+            this.lblErrorDisplay.Location = new System.Drawing.Point(603, 83);
             this.lblErrorDisplay.Name = "lblErrorDisplay";
             this.lblErrorDisplay.Size = new System.Drawing.Size(94, 22);
             this.lblErrorDisplay.TabIndex = 7;
             this.lblErrorDisplay.Text = "(no errors)";
             // 
+            // dgvSentData
+            // 
+            this.dgvSentData.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvSentData.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.SentThrottle,
+            this.SentPitch});
+            this.dgvSentData.Location = new System.Drawing.Point(12, 321);
+            this.dgvSentData.Name = "dgvSentData";
+            this.dgvSentData.Size = new System.Drawing.Size(246, 160);
+            this.dgvSentData.TabIndex = 8;
+            // 
+            // SentPitch
+            // 
+            this.SentPitch.HeaderText = "Elevator Pitch";
+            this.SentPitch.Name = "SentPitch";
+            // 
+            // SentThrottle
+            // 
+            this.SentThrottle.HeaderText = "Throttle";
+            this.SentThrottle.Name = "SentThrottle";
+            // 
+            // lblSentData
+            // 
+            this.lblSentData.AutoSize = true;
+            this.lblSentData.Location = new System.Drawing.Point(12, 302);
+            this.lblSentData.Name = "lblSentData";
+            this.lblSentData.Size = new System.Drawing.Size(116, 13);
+            this.lblSentData.TabIndex = 9;
+            this.lblSentData.Text = "Data Sent to Simulator:";
+            // 
+            // lblDataRecieved
+            // 
+            this.lblDataRecieved.AutoSize = true;
+            this.lblDataRecieved.Location = new System.Drawing.Point(272, 130);
+            this.lblDataRecieved.Name = "lblDataRecieved";
+            this.lblDataRecieved.Size = new System.Drawing.Size(151, 13);
+            this.lblDataRecieved.TabIndex = 10;
+            this.lblDataRecieved.Text = "Data Recieved from Simulator:";
+            // 
             // frmRemoteFlightController
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(993, 561);
+            this.ClientSize = new System.Drawing.Size(1063, 506);
+            this.Controls.Add(this.lblDataRecieved);
+            this.Controls.Add(this.lblSentData);
+            this.Controls.Add(this.dgvSentData);
             this.Controls.Add(this.lblErrorDisplay);
             this.Controls.Add(this.dgvInputData);
             this.Controls.Add(this.grpPlaneControls);
@@ -275,6 +323,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.trbPitch)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trbThrottleControl)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvInputData)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvSentData)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -303,6 +352,11 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Throttle;
         private System.Windows.Forms.DataGridViewTextBoxColumn ElevatorPitch;
         private System.Windows.Forms.DataGridViewTextBoxColumn ErrorCode;
+        private System.Windows.Forms.DataGridView dgvSentData;
+        private System.Windows.Forms.DataGridViewTextBoxColumn SentThrottle;
+        private System.Windows.Forms.DataGridViewTextBoxColumn SentPitch;
+        private System.Windows.Forms.Label lblSentData;
+        private System.Windows.Forms.Label lblDataRecieved;
     }
 }
 

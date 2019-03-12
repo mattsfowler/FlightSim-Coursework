@@ -70,6 +70,24 @@ namespace RemoteFlightController
                                                  data.Throttle,
                                                  data.ElevatorPitch,
                                                  data.WarningCode});
+
+                if (data.WarningCode == 0)
+                {
+                    lblErrorDisplay.ForeColor = Color.Black;
+                    lblErrorDisplay.Text = "(no errors)";
+                }
+            }
+        }
+
+        public void UpdateSentData(ControlsUpdate data)
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new UpdateSentHandler(UpdateSentData), data);
+            }
+            else
+            {
+
             }
         }
 
@@ -81,15 +99,7 @@ namespace RemoteFlightController
             }
             else
             {
-                if (message == "(no errors)")
-                {
-                    lblErrorDisplay.ForeColor = Color.Black;
-                }
-                else
-                {
-                    lblErrorDisplay.ForeColor = Color.Red;
-                }
-
+                lblErrorDisplay.ForeColor = Color.Red;
                 lblErrorDisplay.Text = message;
             }
         }
@@ -221,11 +231,7 @@ namespace RemoteFlightController
             {
                 string message = "Unknown warning!";
 
-                if (telemetryUpdate.WarningCode == 0)
-                {
-                    message = "(no errors)";
-                }
-                else if (telemetryUpdate.WarningCode == 1)
+                if (telemetryUpdate.WarningCode == 1)
                 {
                     message = "WARNING: Low altitude!";
                 }
