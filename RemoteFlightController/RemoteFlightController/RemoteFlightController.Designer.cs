@@ -1,6 +1,6 @@
 ﻿namespace RemoteFlightController
 {
-    partial class frmRemoteFlightController
+    partial class RemoteFlightController
     {
         /// <summary>
         /// Required designer variable.
@@ -50,10 +50,12 @@
             this.ErrorCode = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.lblErrorDisplay = new System.Windows.Forms.Label();
             this.dgvSentData = new System.Windows.Forms.DataGridView();
-            this.SentPitch = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.SentThrottle = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.SentPitch = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.lblSentData = new System.Windows.Forms.Label();
             this.lblDataRecieved = new System.Windows.Forms.Label();
+            this.txtJSON = new System.Windows.Forms.TextBox();
+            this.lblJSON = new System.Windows.Forms.Label();
             this.grpConnection.SuspendLayout();
             this.grpPlaneControls.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trbPitch)).BeginInit();
@@ -128,7 +130,7 @@
             // 
             this.lblTitle.AutoSize = true;
             this.lblTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTitle.Location = new System.Drawing.Point(297, 9);
+            this.lblTitle.Location = new System.Drawing.Point(237, 9);
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(300, 29);
             this.lblTitle.TabIndex = 4;
@@ -141,7 +143,7 @@
             this.grpPlaneControls.Controls.Add(this.trbPitch);
             this.grpPlaneControls.Controls.Add(this.trbThrottleControl);
             this.grpPlaneControls.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.grpPlaneControls.Location = new System.Drawing.Point(12, 130);
+            this.grpPlaneControls.Location = new System.Drawing.Point(284, 160);
             this.grpPlaneControls.Name = "grpPlaneControls";
             this.grpPlaneControls.Size = new System.Drawing.Size(206, 165);
             this.grpPlaneControls.TabIndex = 5;
@@ -196,7 +198,6 @@
             this.dgvInputData.AllowUserToAddRows = false;
             this.dgvInputData.AllowUserToDeleteRows = false;
             this.dgvInputData.AllowUserToResizeColumns = false;
-            this.dgvInputData.AllowUserToResizeRows = false;
             this.dgvInputData.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvInputData.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Altitude,
@@ -206,8 +207,7 @@
             this.Throttle,
             this.ElevatorPitch,
             this.ErrorCode});
-            this.dgvInputData.Enabled = false;
-            this.dgvInputData.Location = new System.Drawing.Point(275, 151);
+            this.dgvInputData.Location = new System.Drawing.Point(12, 359);
             this.dgvInputData.Name = "dgvInputData";
             this.dgvInputData.Size = new System.Drawing.Size(746, 330);
             this.dgvInputData.TabIndex = 6;
@@ -256,7 +256,7 @@
             // 
             this.lblErrorDisplay.AutoSize = true;
             this.lblErrorDisplay.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblErrorDisplay.Location = new System.Drawing.Point(603, 83);
+            this.lblErrorDisplay.Location = new System.Drawing.Point(12, 108);
             this.lblErrorDisplay.Name = "lblErrorDisplay";
             this.lblErrorDisplay.Size = new System.Drawing.Size(94, 22);
             this.lblErrorDisplay.TabIndex = 7;
@@ -264,29 +264,33 @@
             // 
             // dgvSentData
             // 
+            this.dgvSentData.AllowUserToAddRows = false;
+            this.dgvSentData.AllowUserToDeleteRows = false;
+            this.dgvSentData.AllowUserToResizeColumns = false;
+            this.dgvSentData.AllowUserToResizeRows = false;
             this.dgvSentData.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvSentData.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.SentThrottle,
             this.SentPitch});
-            this.dgvSentData.Location = new System.Drawing.Point(12, 321);
+            this.dgvSentData.Location = new System.Drawing.Point(12, 165);
             this.dgvSentData.Name = "dgvSentData";
             this.dgvSentData.Size = new System.Drawing.Size(246, 160);
             this.dgvSentData.TabIndex = 8;
-            // 
-            // SentPitch
-            // 
-            this.SentPitch.HeaderText = "Elevator Pitch";
-            this.SentPitch.Name = "SentPitch";
             // 
             // SentThrottle
             // 
             this.SentThrottle.HeaderText = "Throttle";
             this.SentThrottle.Name = "SentThrottle";
             // 
+            // SentPitch
+            // 
+            this.SentPitch.HeaderText = "Elevator Pitch";
+            this.SentPitch.Name = "SentPitch";
+            // 
             // lblSentData
             // 
             this.lblSentData.AutoSize = true;
-            this.lblSentData.Location = new System.Drawing.Point(12, 302);
+            this.lblSentData.Location = new System.Drawing.Point(12, 146);
             this.lblSentData.Name = "lblSentData";
             this.lblSentData.Size = new System.Drawing.Size(116, 13);
             this.lblSentData.TabIndex = 9;
@@ -295,17 +299,36 @@
             // lblDataRecieved
             // 
             this.lblDataRecieved.AutoSize = true;
-            this.lblDataRecieved.Location = new System.Drawing.Point(272, 130);
+            this.lblDataRecieved.Location = new System.Drawing.Point(9, 338);
             this.lblDataRecieved.Name = "lblDataRecieved";
             this.lblDataRecieved.Size = new System.Drawing.Size(151, 13);
             this.lblDataRecieved.TabIndex = 10;
             this.lblDataRecieved.Text = "Data Recieved from Simulator:";
             // 
-            // frmRemoteFlightController
+            // txtJSON
+            // 
+            this.txtJSON.Location = new System.Drawing.Point(510, 165);
+            this.txtJSON.Multiline = true;
+            this.txtJSON.Name = "txtJSON";
+            this.txtJSON.Size = new System.Drawing.Size(248, 160);
+            this.txtJSON.TabIndex = 11;
+            // 
+            // lblJSON
+            // 
+            this.lblJSON.AutoSize = true;
+            this.lblJSON.Location = new System.Drawing.Point(507, 146);
+            this.lblJSON.Name = "lblJSON";
+            this.lblJSON.Size = new System.Drawing.Size(138, 13);
+            this.lblJSON.TabIndex = 13;
+            this.lblJSON.Text = "Raw JSON Data Recieved:";
+            // 
+            // RemoteFlightController
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1063, 506);
+            this.ClientSize = new System.Drawing.Size(770, 699);
+            this.Controls.Add(this.lblJSON);
+            this.Controls.Add(this.txtJSON);
             this.Controls.Add(this.lblDataRecieved);
             this.Controls.Add(this.lblSentData);
             this.Controls.Add(this.dgvSentData);
@@ -314,7 +337,7 @@
             this.Controls.Add(this.grpPlaneControls);
             this.Controls.Add(this.lblTitle);
             this.Controls.Add(this.grpConnection);
-            this.Name = "frmRemoteFlightController";
+            this.Name = "RemoteFlightController";
             this.Text = "Remote Flight Controller";
             this.grpConnection.ResumeLayout(false);
             this.grpConnection.PerformLayout();
@@ -357,6 +380,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn SentPitch;
         private System.Windows.Forms.Label lblSentData;
         private System.Windows.Forms.Label lblDataRecieved;
+        private System.Windows.Forms.TextBox txtJSON;
+        private System.Windows.Forms.Label lblJSON;
     }
 }
 

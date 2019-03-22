@@ -37,70 +37,49 @@ namespace RemoteFlightController
     public delegate void UpdateRecievedHandler(TelemetryUpdate telemetryUpdate);
     public delegate void ErrorRecievedHandler(string message);
 
-    public delegate ControlsUpdate GetControlsHandler();
 
-
-    public partial class frmRemoteFlightController : Form
+    public partial class RemoteFlightController : Form
     {
-        public RemoteFlightController Simulator;
+        public event UpdateSentHandler ControlUpdateSent;
+        public event UpdateRecievedHandler TelemetryRecieved;
+        public event ErrorRecievedHandler ErrorRecieved;
 
-        public frmRemoteFlightController()
+        public RemoteFlightController CurrentForm;
+        public Thread listenerThread;
+        public TcpClient client;
+        public NetworkStream stream;
+        public TelemetryUpdate currentTelem;
+
+        public RemoteFlightController()
         {
             InitializeComponent();
-            Simulator = new RemoteFlightController(this);
             txtServerPort.Text = "9999";
 
             IPHostEntry ipHostEntry = Dns.GetHostEntry(Dns.GetHostName());
             IPAddress[] address = ipHostEntry.AddressList;
             txtServerIP.Text = address[4].ToString();
+
+            currentTelem = new TelemetryUpdate();
+
+            ControlUpdateSent += new UpdateSentHandler(onUpdateSent);
+            TelemetryRecieved += new UpdateRecievedHandler(onTelemetryRecieved);
+            ErrorRecieved += new ErrorRecievedHandler(onErrorRecieved);
         }
 
         public void UpdateTable(TelemetryUpdate data)
         {
-            if (this.InvokeRequired)
-            {
-                this.Invoke(new UpdateRecievedHandler(UpdateTable), data);
-            }
-            else
-            {
-                dgvInputData.Rows.Insert(0, new object[] { data.Altitude,
-                                                 data.Speed,
-                                                 data.Pitch,
-                                                 data.VerticleSpeed,
-                                                 data.Throttle,
-                                                 data.ElevatorPitch,
-                                                 data.WarningCode});
+            dgvInputData.Rows.Insert(0, new object[] { data.Altitude,
+                                                data.Speed,
+                                                data.Pitch,
+                                                data.VerticleSpeed,
+                                                data.Throttle,
+                                                data.ElevatorPitch,
+                                                data.WarningCode});
 
-                if (data.WarningCode == 0)
-                {
-                    lblErrorDisplay.ForeColor = Color.Black;
-                    lblErrorDisplay.Text = "(no errors)";
-                }
-            }
-        }
-
-        public void UpdateSentData(ControlsUpdate data)
-        {
-            if (this.InvokeRequired)
+            if (data.WarningCode == 0)
             {
-                this.Invoke(new UpdateSentHandler(UpdateSentData), data);
-            }
-            else
-            {
-
-            }
-        }
-
-        public void ShowError(string message)
-        {
-            if (this.InvokeRequired)
-            {
-                Invoke(new ErrorRecievedHandler(ShowError), message);
-            }
-            else
-            {
-                lblErrorDisplay.ForeColor = Color.Red;
-                lblErrorDisplay.Text = message;
+                lblErrorDisplay.ForeColor = Color.Black;
+                lblErrorDisplay.Text = "(no errors)";
             }
         }
 
@@ -113,7 +92,8 @@ namespace RemoteFlightController
                 trbPitch.Enabled = true;
                 trbThrottleControl.Enabled = true;
                 btnConnectDisconnect.Text = "Disconnect";
-                Simulator.Connect(txtServerIP.Text, txtServerPort.Text);
+                listenerThread = new Thread(new ParameterizedThreadStart(ConnectionLoop));
+                listenerThread.Start(new string[] { txtServerIP.Text, txtServerPort.Text });
             }
             else if (btnConnectDisconnect.Text == "Disconnect")
             {
@@ -124,61 +104,24 @@ namespace RemoteFlightController
                 trbThrottleControl.Enabled = false;
                 trbThrottleControl.Value = 0;
                 btnConnectDisconnect.Text = "Connect";
-                Simulator.Disconnect();
+                listenerThread.Abort();
+                //client.Close(); <--- when the thread is aborted, it closes automatically (I think, check this properly)
             }
         }
 
         private void trbThrottleControl_Scroll(object sender, EventArgs e)
         {
-            Simulator.ControlDataChanged((trbThrottleControl.Value / 10f), (trbPitch.Value / 10f));
+            ControlsUpdate update = new ControlsUpdate();
+            update.Throttle = (trbThrottleControl.Value / 10f);
+            update.ElevatorPitch = (trbPitch.Value / 10f);
+            ControlUpdateSent.Invoke(update);
         }
 
         private void trbPitch_Scroll(object sender, EventArgs e)
         {
-            Simulator.ControlDataChanged((trbThrottleControl.Value / 10f), (trbPitch.Value / 10f));
-        }
-    }
-
-
-    public class RemoteFlightController
-    {
-        public event UpdateSentHandler ControlUpdateSent;
-        public event UpdateRecievedHandler TelemetryRecieved;
-        public event ErrorRecievedHandler ErrorRecieved;
-
-        public frmRemoteFlightController CurrentForm;
-        public Thread listenerThread;
-        public TcpClient client;
-        public NetworkStream stream;
-        public TelemetryUpdate currentTelem;
-
-        public RemoteFlightController(frmRemoteFlightController CurrentForm)
-        {
-            this.CurrentForm = CurrentForm;
-            currentTelem = new TelemetryUpdate();
-
-            ControlUpdateSent += new UpdateSentHandler(onUpdateSent);
-            TelemetryRecieved += new UpdateRecievedHandler(onTelemetryRecieved);
-            ErrorRecieved += new ErrorRecievedHandler(onErrorRecieved);
-        }
-
-        public void Connect(string ipAddress, string port)
-        {
-            listenerThread = new Thread(new ParameterizedThreadStart(ConnectionLoop));
-            listenerThread.Start(new string[] { ipAddress, port });
-        }
-
-        public void Disconnect()
-        {
-            listenerThread.Abort();
-            //client.Close(); <--- when the thread is aborted, it closes automatically (I think, check this properly)
-        }
-
-        public void ControlDataChanged(double throttle, double elevatorPitch)
-        {
             ControlsUpdate update = new ControlsUpdate();
-            update.Throttle = throttle;
-            update.ElevatorPitch = elevatorPitch;
+            update.Throttle = (trbThrottleControl.Value / 10f);
+            update.ElevatorPitch = (trbPitch.Value / 10f);
             ControlUpdateSent.Invoke(update);
         }
 
@@ -199,6 +142,7 @@ namespace RemoteFlightController
             {
                 int numBytes = stream.Read(buffer, 0, bufferSize);
                 string message = Encoding.ASCII.GetString(buffer, 0, numBytes);
+                txtJSON.Text = message;
 
                 TelemetryUpdate update = serializer.Deserialize<TelemetryUpdate>(message);
                 TelemetryRecieved.Invoke(update);
@@ -207,48 +151,78 @@ namespace RemoteFlightController
 
         private void onUpdateSent(ControlsUpdate controlsUpdate)
         {
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
-            string stringData = serializer.Serialize(controlsUpdate);
-            byte[] rawData = Encoding.ASCII.GetBytes(stringData);
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new UpdateSentHandler(onUpdateSent), controlsUpdate);
+            }
+            else
+            {
+                JavaScriptSerializer serializer = new JavaScriptSerializer();
+                string stringData = serializer.Serialize(controlsUpdate);
+                byte[] rawData = Encoding.ASCII.GetBytes(stringData);
 
-            stream.Write(rawData, 0, rawData.Length);
+                dgvSentData.Rows.Insert(0, new object[] { controlsUpdate.Throttle,
+                                        controlsUpdate.ElevatorPitch }
+                );
+                stream.Write(rawData, 0, rawData.Length);
+            }
         }
 
         private void onTelemetryRecieved(TelemetryUpdate telemetryUpdate)
         {
-            if ((currentTelem.Altitude != telemetryUpdate.Altitude)
-             || (currentTelem.ElevatorPitch != telemetryUpdate.ElevatorPitch)
-             || (currentTelem.Pitch != telemetryUpdate.Pitch)
-             || (currentTelem.Speed != telemetryUpdate.Speed)
-             || (currentTelem.Throttle != telemetryUpdate.Throttle)
-             || (currentTelem.VerticleSpeed != telemetryUpdate.VerticleSpeed)
-             || (currentTelem.WarningCode != telemetryUpdate.WarningCode))
+            if (this.InvokeRequired)
             {
-                CurrentForm.UpdateTable(telemetryUpdate);
+                this.Invoke(new UpdateRecievedHandler(onTelemetryRecieved), telemetryUpdate);
             }
-
-            if (currentTelem.WarningCode != telemetryUpdate.WarningCode)
+            else
             {
-                string message = "Unknown warning!";
-
-                if (telemetryUpdate.WarningCode == 1)
+                if ((currentTelem.Altitude != telemetryUpdate.Altitude)
+                 || (currentTelem.ElevatorPitch != telemetryUpdate.ElevatorPitch)
+                 || (currentTelem.Pitch != telemetryUpdate.Pitch)
+                 || (currentTelem.Speed != telemetryUpdate.Speed)
+                 || (currentTelem.Throttle != telemetryUpdate.Throttle)
+                 || (currentTelem.VerticleSpeed != telemetryUpdate.VerticleSpeed)
+                 || (currentTelem.WarningCode != telemetryUpdate.WarningCode))
                 {
-                    message = "WARNING: Low altitude!";
-                }
-                else if (telemetryUpdate.WarningCode == 2)
-                {
-                    message = "WARNING: Stall risk!";
+                    UpdateTable(telemetryUpdate);
                 }
 
-                ErrorRecieved.Invoke(message);
-            }
+                if (telemetryUpdate.WarningCode != 0)
+                {
+                    string message = "Unknown warning!";
 
-            currentTelem = telemetryUpdate;
+                    if (telemetryUpdate.WarningCode == 1)
+                    {
+                        message = "WARNING: Low altitude!";
+                    }
+                    else if (telemetryUpdate.WarningCode == 2)
+                    {
+                        message = "WARNING: Stall risk!";
+                    }
+
+                    ErrorRecieved.Invoke(message);
+                }
+                else
+                {
+                    lblErrorDisplay.ForeColor = Color.Black;
+                    lblErrorDisplay.Text = "(no errors)";
+                }
+
+                currentTelem = telemetryUpdate;
+            }
         }
 
         private void onErrorRecieved(string message)
         {
-            CurrentForm.ShowError(message);
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new ErrorRecievedHandler(onErrorRecieved), message);
+            }
+            else
+            {
+                lblErrorDisplay.ForeColor = Color.Red;
+                lblErrorDisplay.Text = message;
+            }
         }
     }
 }

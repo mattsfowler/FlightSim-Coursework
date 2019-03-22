@@ -16,7 +16,7 @@ namespace RemoteFlightController
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new frmRemoteFlightController());
+            Application.Run(new RemoteFlightController());
         }
     }
 }
