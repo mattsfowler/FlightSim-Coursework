@@ -13,14 +13,22 @@ using System.Threading;
 using System.Web;
 using System.Web.Script.Serialization;
 
+/*
+ AUTHOR:        Matthew Fowler
+ STUDENT ID:    17025958
+ EMAIL:         17025958@students.southwales.ac.uk
+*/
+
 namespace RemoteFlightController
 {
+    /*used to send data from the controller to the simulator*/
     public struct ControlsUpdate
     {
         public double Throttle;
         public double ElevatorPitch;
     }
 
+    /*used to recieve data from the simulator*/
     public struct TelemetryUpdate
     {
         public double Altitude;         //Altitude in ft.
@@ -33,37 +41,46 @@ namespace RemoteFlightController
     }
 
 
+    /*These delegates define the types of function that can handle certain events.
+     For example, any function that handles sending data to the simulator will
+     need to take a ControlsUpdate as a parameter.*/
     public delegate void UpdateSentHandler(ControlsUpdate controlsUpdate);
     public delegate void UpdateRecievedHandler(TelemetryUpdate telemetryUpdate);
     public delegate void ErrorRecievedHandler(string message);
 
-
+    /// <summary>
+    /// When the connect button is pressed, a worker thread is spun off that
+    /// listens for incomming JSON data
+    /// </summary>
     public partial class RemoteFlightController : Form
     {
         public event UpdateSentHandler ControlUpdateSent;
         public event UpdateRecievedHandler TelemetryRecieved;
         public event ErrorRecievedHandler ErrorRecieved;
 
-        public RemoteFlightController CurrentForm;
         public Thread listenerThread;
         public TcpClient client;
         public NetworkStream stream;
-        public TelemetryUpdate currentTelem;
+        public TelemetryUpdate currentTelem;    
 
         public RemoteFlightController()
         {
+            //required for Windows Form Apps
             InitializeComponent();
-            txtServerPort.Text = "9999";
 
-            IPHostEntry ipHostEntry = Dns.GetHostEntry(Dns.GetHostName());
-            IPAddress[] address = ipHostEntry.AddressList;
-            txtServerIP.Text = address[4].ToString();
-
+            //contains the last telemetry data recieved (used to work out if repeated data has been sent)
             currentTelem = new TelemetryUpdate();
 
+            //assign concrete methods to handle relevent events:
             ControlUpdateSent += new UpdateSentHandler(onUpdateSent);
             TelemetryRecieved += new UpdateRecievedHandler(onTelemetryRecieved);
             ErrorRecieved += new ErrorRecievedHandler(onErrorRecieved);
+
+            txtServerPort.Text = "9999";    //default port number
+            //automatically get this machine's IP address, and load it into the textbox:
+            IPHostEntry ipHostEntry = Dns.GetHostEntry(Dns.GetHostName());
+            IPAddress[] address = ipHostEntry.AddressList;
+            txtServerIP.Text = address[4].ToString();
         }
 
         public void UpdateTable(TelemetryUpdate data)
@@ -134,13 +151,12 @@ namespace RemoteFlightController
             client.Connect(ip, int.Parse(port));
             stream = client.GetStream();
 
-            int bufferSize = 256;
-            byte[] buffer = new byte[bufferSize];
+            byte[] buffer = new byte[256];
             JavaScriptSerializer serializer = new JavaScriptSerializer();
 
             while (true)
             {
-                int numBytes = stream.Read(buffer, 0, bufferSize);
+                int numBytes = stream.Read(buffer, 0, 265);
                 string message = Encoding.ASCII.GetString(buffer, 0, numBytes);
                 txtJSON.Text = message;
 
