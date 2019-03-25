@@ -180,7 +180,7 @@
             this.trbPitch.Orientation = System.Windows.Forms.Orientation.Vertical;
             this.trbPitch.Size = new System.Drawing.Size(45, 104);
             this.trbPitch.TabIndex = 6;
-            this.trbPitch.Scroll += new System.EventHandler(this.trbPitch_Scroll);
+            this.trbPitch.Scroll += new System.EventHandler(this.trbPitch_ThrottleControl_Scroll);
             // 
             // trbThrottleControl
             // 
@@ -191,7 +191,7 @@
             this.trbThrottleControl.Orientation = System.Windows.Forms.Orientation.Vertical;
             this.trbThrottleControl.Size = new System.Drawing.Size(45, 104);
             this.trbThrottleControl.TabIndex = 0;
-            this.trbThrottleControl.Scroll += new System.EventHandler(this.trbThrottleControl_Scroll);
+            this.trbThrottleControl.Scroll += new System.EventHandler(this.trbPitch_ThrottleControl_Scroll);
             // 
             // dgvInputData
             // 
