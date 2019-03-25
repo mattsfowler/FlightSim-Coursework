@@ -106,6 +106,12 @@ namespace RemoteFlightController
             }
         }
 
+        public void UpdateJSONDisplay(TelemetryUpdate data)
+        {
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            txtJSON.Text = serializer.Serialize(data);
+        }
+
         /*A helper method that takes a string array containing an IP and a port number, and
          continually listens for incomming JSON data, invoking relevent events when it
          does recieve data.*/
@@ -122,13 +128,13 @@ namespace RemoteFlightController
 
             byte[] buffer = new byte[256];
             JavaScriptSerializer serializer = new JavaScriptSerializer();
+            int numBytes = 0;
 
             while (true)
             {
-                int numBytes = stream.Read(buffer, 0, 265);
+                numBytes = stream.Read(buffer, 0, 256);
                 string message = Encoding.ASCII.GetString(buffer, 0, numBytes);
-                txtJSON.Text = message;
-
+                
                 TelemetryUpdate update = serializer.Deserialize<TelemetryUpdate>(message);
                 TelemetryRecieved.Invoke(update);
             }
@@ -223,6 +229,7 @@ namespace RemoteFlightController
                  || (currentTelem.WarningCode != telemetryUpdate.WarningCode))
                 {
                     UpdateTable(telemetryUpdate);
+                    UpdateJSONDisplay(telemetryUpdate);
                 }
 
                 if (telemetryUpdate.WarningCode != 0)
