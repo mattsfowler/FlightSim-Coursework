@@ -61,7 +61,7 @@ namespace RemoteFlightController
         public Thread listenerThread;
         public TcpClient client;
         public NetworkStream stream;
-        public TelemetryUpdate currentTelem;    
+        public TelemetryUpdate currentTelem;
 
         public RemoteFlightController()
         {
@@ -124,17 +124,25 @@ namespace RemoteFlightController
             //create a new client object
             client = new TcpClient();
             client.Connect(ip, int.Parse(port));
+            //the stream is used to send and recieve bytes
             stream = client.GetStream();
 
+            //set up the serialiser - the stream will recieve raw bytes and so
             byte[] buffer = new byte[256];
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             int numBytes = 0;
 
+            //the loop runs indefinitely and does three things each cycle:
+            //1. waits for data to be sent to the network stream, and reads it
+            //2. deserialises the data, interpreting it as a TelemetryUpdate structure
+            //3. triggers the telemetryRecieved event that deals with the data
             while (true)
             {
+                //Read is a blocking method - the thread will pause here until data is recieved
                 numBytes = stream.Read(buffer, 0, 256);
+                //the data from the stream will be raw bytes - convert it to a string for the serialiser
                 string message = Encoding.ASCII.GetString(buffer, 0, numBytes);
-                
+
                 TelemetryUpdate update = serializer.Deserialize<TelemetryUpdate>(message);
                 TelemetryRecieved.Invoke(update);
             }
@@ -191,6 +199,14 @@ namespace RemoteFlightController
             ControlUpdateSent.Invoke(update);
         }
 
+        /* -------------------- CONTROLLER EVENT HANDLERS -------------------- */
+
+        /*The InvokeRequired sections are needed for cross-thread method calls: 
+         if the method that invoked the method is on a different thread, it
+         cannot directly call the method on this thread (it must be invoked
+         instead)*/
+
+        /*Deals with sending updates to the simulator in the correct format*/
         private void onUpdateSent(ControlsUpdate controlsUpdate)
         {
             if (this.InvokeRequired)
@@ -199,19 +215,25 @@ namespace RemoteFlightController
             }
             else
             {
+                //the data to send must be sent as a raw byte stream - to do this we
+                //convert the data to a JSON string, which is the format that the
+                //simulator is expecting.
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
                 string stringData = serializer.Serialize(controlsUpdate);
                 byte[] rawData = Encoding.ASCII.GetBytes(stringData);
 
+                //update the display on this form with the data we just sent
                 dgvSentData.Rows.Insert(0, new object[] { controlsUpdate.Throttle,
                                         controlsUpdate.ElevatorPitch }
                 );
+
+                //send the bytes to the network stream
                 stream.Write(rawData, 0, rawData.Length);
             }
         }
 
-        /* -------------------- CONTROLLER EVENT HANDLERS -------------------- */
-
+        /*Deals with updating the form with the data provided, and with triggering the
+         error recieved handler if required*/
         private void onTelemetryRecieved(TelemetryUpdate telemetryUpdate)
         {
             if (this.InvokeRequired)
@@ -220,6 +242,7 @@ namespace RemoteFlightController
             }
             else
             {
+                //in English: if the telemetry of the plane has changed since the last update
                 if ((currentTelem.Altitude != telemetryUpdate.Altitude)
                  || (currentTelem.ElevatorPitch != telemetryUpdate.ElevatorPitch)
                  || (currentTelem.Pitch != telemetryUpdate.Pitch)
@@ -228,14 +251,18 @@ namespace RemoteFlightController
                  || (currentTelem.VerticleSpeed != telemetryUpdate.VerticleSpeed)
                  || (currentTelem.WarningCode != telemetryUpdate.WarningCode))
                 {
+                    //add the recieved telemetry to the table, and the raw JSON string to a textbox
                     UpdateTable(telemetryUpdate);
                     UpdateJSONDisplay(telemetryUpdate);
                 }
 
+                //if the simulator sent a warning code other that 0, we need to handle the error
                 if (telemetryUpdate.WarningCode != 0)
                 {
+                    //default message - will be displayed if a warning code other that 1 or 2 was given
                     string message = "Unknown warning!";
 
+                    //set the message to the appropriate value based on the error code
                     if (telemetryUpdate.WarningCode == 1)
                     {
                         message = "WARNING: Low altitude!";
@@ -245,18 +272,16 @@ namespace RemoteFlightController
                         message = "WARNING: Stall risk!";
                     }
 
+                    //trigger the error handling event to deal with the error
                     ErrorRecieved.Invoke(message);
-                }
-                else
-                {
-                    lblErrorDisplay.ForeColor = Color.Black;
-                    lblErrorDisplay.Text = "(no errors)";
                 }
 
                 currentTelem = telemetryUpdate;
             }
         }
 
+        /*Deals with any errors recieved from the simulator - displays the provided
+         message to the form*/
         private void onErrorRecieved(string message)
         {
             if (this.InvokeRequired)
@@ -265,6 +290,7 @@ namespace RemoteFlightController
             }
             else
             {
+                //no actual processing here - just set the error display to the message given
                 lblErrorDisplay.ForeColor = Color.Red;
                 lblErrorDisplay.Text = message;
             }
