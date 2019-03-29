@@ -68,3 +68,13 @@ C:\Users\17025958\Documents\GitHub\FlightSim-Coursework\RemoteFlightController\R
 C:\Users\17025958\Documents\GitHub\FlightSim-Coursework\RemoteFlightController\RemoteFlightController\obj\Debug\RemoteFlightController.csproj.CoreCompileInputs.cache
 C:\Users\17025958\Documents\GitHub\FlightSim-Coursework\RemoteFlightController\RemoteFlightController\obj\Debug\RemoteFlightController.exe
 C:\Users\17025958\Documents\GitHub\FlightSim-Coursework\RemoteFlightController\RemoteFlightController\obj\Debug\RemoteFlightController.pdb
+C:\Users\Matt\Documents\GitHub\FlightSim-Coursework\RemoteFlightController\RemoteFlightController\bin\Debug\RemoteFlightController.exe.config
+C:\Users\Matt\Documents\GitHub\FlightSim-Coursework\RemoteFlightController\RemoteFlightController\bin\Debug\RemoteFlightController.exe
+C:\Users\Matt\Documents\GitHub\FlightSim-Coursework\RemoteFlightController\RemoteFlightController\bin\Debug\RemoteFlightController.pdb
+C:\Users\Matt\Documents\GitHub\FlightSim-Coursework\RemoteFlightController\RemoteFlightController\obj\Debug\RemoteFlightController.csprojResolveAssemblyReference.cache
+C:\Users\Matt\Documents\GitHub\FlightSim-Coursework\RemoteFlightController\RemoteFlightController\obj\Debug\RemoteFlightController.Properties.Resources.resources
+C:\Users\Matt\Documents\GitHub\FlightSim-Coursework\RemoteFlightController\RemoteFlightController\obj\Debug\RemoteFlightController.RemoteFlightController.resources
+C:\Users\Matt\Documents\GitHub\FlightSim-Coursework\RemoteFlightController\RemoteFlightController\obj\Debug\RemoteFlightController.csproj.GenerateResource.Cache
+C:\Users\Matt\Documents\GitHub\FlightSim-Coursework\RemoteFlightController\RemoteFlightController\obj\Debug\RemoteFlightController.csproj.CoreCompileInputs.cache
+C:\Users\Matt\Documents\GitHub\FlightSim-Coursework\RemoteFlightController\RemoteFlightController\obj\Debug\RemoteFlightController.exe
+C:\Users\Matt\Documents\GitHub\FlightSim-Coursework\RemoteFlightController\RemoteFlightController\obj\Debug\RemoteFlightController.pdb
